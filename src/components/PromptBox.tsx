@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import {
   Dialog,
   DialogTrigger,
@@ -92,9 +93,11 @@ export function PromptBox({
                     hover:border-primary/50 hover:shadow-md
                     ${t.id === tempTemplate ? 'ring-2 ring-primary shadow-sm' : ''}`}
                 >
-                  <img
+                  <Image
                     src={t.thumb}
-                    alt=""
+                    alt={`${t.label} template preview`}
+                    width={400}
+                    height={225}
                     className="w-full aspect-video object-cover rounded-md border border-border/50"
                   />
                   <p className="text-center mt-1 font-medium">{t.label}</p>

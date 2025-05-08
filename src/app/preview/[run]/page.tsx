@@ -5,15 +5,17 @@ import { useParams, useRouter }    from 'next/navigation'
 import { Button }       from '@/components/ui/button'
 import { motion }       from 'framer-motion'
 import { AlertCircle, Download }     from 'lucide-react'
+import Image from 'next/image'
 
 export default function PreviewPage() {
   const params = useParams()
   const router = useRouter()
   const run = Array.isArray(params.run) ? params.run[0] : params.run
+  const { data, isLoading, error } = usePreview(run || '')
 
-  if (!run) return null
-
-  const { data, isLoading, error } = usePreview(run)
+  if (!run) {
+    return null
+  }
 
   if (error) {
     return (
@@ -94,11 +96,13 @@ export default function PreviewPage() {
             }}
           >
             <div className="relative group">
-              <img
+              <Image
                 src={url}
                 alt={`Slide ${i + 1}`}
+                width={800}
+                height={450}
                 className="w-full rounded-lg shadow-sm transition-all duration-200
-                         group-hover:shadow-md"
+                         group-hover:shadow-md border border-border/100"
                 loading={i > 2 ? 'lazy' : 'eager'}
               />
               <div className="absolute top-2 right-2 bg-background/90 backdrop-blur-sm 

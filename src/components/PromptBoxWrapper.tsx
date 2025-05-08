@@ -1,7 +1,6 @@
 'use client';
 import { PromptBox } from './PromptBox';
 import { useGenerate } from '@/hooks/useGenerate';
-import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 
@@ -12,7 +11,6 @@ const loadingMessages = [
 ];
 
 export default function PromptBoxWrapper() {
-  const router = useRouter();
   const { start, isGenerating, error } = useGenerate();
   const [messageIndex, setMessageIndex] = useState(0);
 

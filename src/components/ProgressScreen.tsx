@@ -5,9 +5,9 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 
-export default function ProgressScreen({ run, template }: { run: string; template: string }) {
+export default function ProgressScreen({ run }: { run: string }) {
   const router = useRouter()
-  const { data, isLoading, error } = useStatusPoll(run)
+  const { data, error } = useStatusPoll(run)
 
   // redirect when finished
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function ProgressScreen({ run, template }: { run: string; templat
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              {data?.state === 'planning' ? 'Planning your presentation...' :
+              {data?.state === 'planning' ? "Might look stuck, but it's not!" :
                data?.state === 'generating' ? 'Creating your slides...' :
                'Getting things ready...'}
             </motion.h2>

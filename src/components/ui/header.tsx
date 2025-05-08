@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
 function useScrollDirection() {
   const [isVisible, setIsVisible] = useState(true);
@@ -27,10 +28,10 @@ export function Header() {
       isVisible ? 'translate-y-0' : '-translate-y-full'
     }`}>
       <div className="h-full max-w-7xl mx-auto px-4 flex items-center justify-between">
-        <a href="/" className="flex items-center gap-2 font-bold transition-opacity hover:opacity-80">
+        <Link href="/" className="flex items-center gap-2 font-bold transition-opacity hover:opacity-80">
           <span className="text-2xl">א</span>
           <span>ALEPH</span>
-        </a>
+        </Link>
       </div>
     </header>
   );

@@ -4,7 +4,16 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const REGION = process.env.AWS_REGION!;
 const BUCKET = process.env.OUTPUT_BUCKET!;
-const client = new S3Client({ region: REGION });
+const ACCESS_KEY = process.env.AWS_ACCESS_KEY_ID!;
+const SECRET_KEY = process.env.AWS_SECRET_ACCESS_KEY!;
+
+const client = new S3Client({
+  region: REGION,
+  credentials: {
+    accessKeyId: ACCESS_KEY,
+    secretAccessKey: SECRET_KEY,
+  },
+});
 
 // Handle CORS preflight requests
 export async function OPTIONS() {
@@ -27,20 +36,46 @@ export async function GET(
   const { run } = params;
   const key = `runs/${run}/frontend_status.json`;
 
-  // Generate a 60s presigned URL
-  const url = await getSignedUrl(
-    client,
-    new GetObjectCommand({ Bucket: BUCKET, Key: key }),
-    { expiresIn: 60 }
-  );
+  try {
+    // Generate a 60s presigned URL
+    const url = await getSignedUrl(
+      client,
+      new GetObjectCommand({ Bucket: BUCKET, Key: key }),
+      { expiresIn: 60 }
+    );
 
-  const res = await fetch(url, { cache: 'no-store' });
-  if (!res.ok) {
-    // Let the client keep retrying on 404/403
+    const res = await fetch(url, { cache: 'no-store' });
+
+    if (!res.ok) {
+      console.error(`Status fetch failed: ${res.status}`);
+      // Let the client keep retrying on 404/403
+      return NextResponse.json(
+        { error: 'status not ready', code: res.status },
+        {
+          status: res.status,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+          },
+        }
+      );
+    }
+
+    const data = await res.json();
+    return NextResponse.json(data, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    });
+  } catch (error) {
+    console.error('Error accessing S3:', error);
     return NextResponse.json(
-      { error: 'status not ready', code: res.status },
+      { error: 'Failed to access S3' },
       {
-        status: res.status,
+        status: 500,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Methods': 'GET, OPTIONS',
@@ -49,13 +84,4 @@ export async function GET(
       }
     );
   }
-
-  const data = await res.json();
-  return NextResponse.json(data, {
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
-  });
 }

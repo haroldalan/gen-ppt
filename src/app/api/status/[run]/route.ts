@@ -7,10 +7,10 @@ const BUCKET = process.env.OUTPUT_BUCKET!;
 const client = new S3Client({ region: REGION });
 
 export async function GET(
-  request: Request,
-  context: { params: { run: string } }
+  _req: Request,
+  { params }: { params: { run: string } }
 ) {
-  const { run } = context.params;
+  const { run } = params;
   const key = `runs/${run}/frontend_status.json`;
 
   // Generate a 60s presigned URL

@@ -14,10 +14,10 @@ import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 
 const TEMPLATES = [
+  { id: 'simple',  label: 'Simple',  thumb: '/templates/simple.png'  },
   { id: 'blocky', label: 'Blocky', thumb: '/templates/blocky.png' },
   { id: 'galaxy',  label: 'Galaxy',  thumb: '/templates/galaxy.png'  },
   { id: 'organic',  label: 'Organic',  thumb: '/templates/organic.png'  },
-  { id: 'simple',  label: 'Simple',  thumb: '/templates/simple.png'  },
 ];
 
 export function PromptBox({
@@ -28,7 +28,7 @@ export function PromptBox({
   isGenerating: boolean;
 }) {
   const [prompt, setPrompt] = useState('');
-  const [template, setTemplate] = useState('Blocky');
+  const [template, setTemplate] = useState('Simple');
   const [tempTemplate, setTempTemplate] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
 

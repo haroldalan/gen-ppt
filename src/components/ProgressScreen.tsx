@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 
-export default function ProgressScreen({ run }: { run: string }) {
+export default function ProgressScreen({ run, template }: { run: string; template: string }) {
   const router = useRouter()
   const { data, error } = useStatusPoll(run)
 
@@ -22,6 +22,17 @@ export default function ProgressScreen({ run }: { run: string }) {
       case 'generating': return '✨'
       case 'done': return '🎉'
       default: return '💭'
+    }
+  }
+
+  const getMessage = (state?: string) => {
+    switch (state) {
+      case 'planning':
+        return `Planning your presentation with the ${template} template...`
+      case 'generating':
+        return `Creating your slides using ${template} style...`
+      default:
+        return 'Getting things ready...'
     }
   }
 
@@ -58,9 +69,7 @@ export default function ProgressScreen({ run }: { run: string }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              {data?.state === 'planning' ? "Might look stuck, but it's not!" :
-               data?.state === 'generating' ? 'Creating your slides...' :
-               'Getting things ready...'}
+              {getMessage(data?.state)}
             </motion.h2>
             
             {/* Status message */}

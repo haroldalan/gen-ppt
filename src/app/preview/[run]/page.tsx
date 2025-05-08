@@ -56,7 +56,7 @@ export default function PreviewPage() {
           <Button 
             variant="ghost" 
             onClick={() => router.push('/')}
-            className="self-start"
+            className="self-start hidden md:block" // Hide on mobile
           >
             ← Back
           </Button>
@@ -64,7 +64,7 @@ export default function PreviewPage() {
           <a 
             href={data.pptUrl} 
             target="_blank" 
-            rel="noreferrer" 
+            rel="noreferrer"
             className="hidden md:block"
           >
             <Button variant="ghost" className="gap-2">
@@ -114,8 +114,8 @@ export default function PreviewPage() {
         ))}
       </div>
 
-      {/* Floating download button for mobile */}
-      <div className="fixed right-4 bottom-20 md:hidden z-50">
+      {/* Centered floating download button for mobile */}
+      <div className="fixed left-0 right-0 bottom-20 md:hidden z-50 px-4">
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -126,13 +126,14 @@ export default function PreviewPage() {
           }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          className="flex justify-center"
         >
           <a href={data.pptUrl} target="_blank" rel="noreferrer">
             <Button 
-              size="icon" 
-              className="rounded-full h-12 w-12 shadow-lg hover:shadow-xl transition-shadow"
+              className="shadow-lg hover:shadow-xl transition-shadow px-6 py-2 gap-2"
             >
-              <Download />
+              <Download size={18} />
+              Download Presentation
             </Button>
           </a>
         </motion.div>

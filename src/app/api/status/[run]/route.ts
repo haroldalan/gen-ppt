@@ -6,6 +6,20 @@ const REGION = process.env.AWS_REGION!;
 const BUCKET = process.env.OUTPUT_BUCKET!;
 const client = new S3Client({ region: REGION });
 
+// Handle CORS preflight requests
+export async function OPTIONS() {
+  return NextResponse.json(
+    {},
+    {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      },
+    }
+  );
+}
+
 export async function GET(
   _req: Request,
   { params }: { params: { run: string } }
@@ -25,10 +39,23 @@ export async function GET(
     // Let the client keep retrying on 404/403
     return NextResponse.json(
       { error: 'status not ready', code: res.status },
-      { status: res.status }
+      {
+        status: res.status,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        },
+      }
     );
   }
 
   const data = await res.json();
-  return NextResponse.json(data);
+  return NextResponse.json(data, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }

@@ -9,10 +9,9 @@ const s3 = new S3Client({ region: REGION })
 
 export async function GET(
   request: Request,
-  context: { params: { run: string } }
+  { params }: { params: { run: string } }
 ) {
-  // ⚠️ await params before using them
-  const { run } = await context.params  
+  const { run } = params
   const prefix = `runs/${run}/previews/`
 
   // fetch manifest.json

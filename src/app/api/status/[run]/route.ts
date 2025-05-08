@@ -8,10 +8,9 @@ const client = new S3Client({ region: REGION });
 
 export async function GET(
   _req: Request,
-  { params }: { params: Promise<{ run: string }> }
+  { params }: { params: { run: string } }
 ) {
-  // Await the promise before pulling out `run`
-  const { run } = await params;
+  const { run } = params;
   const key = `runs/${run}/frontend_status.json`;
 
   // Generate a 60s presigned URL

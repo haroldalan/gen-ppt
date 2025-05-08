@@ -7,13 +7,9 @@ const BUCKET = process.env.OUTPUT_BUCKET!
 
 const s3 = new S3Client({ region: REGION })
 
-type Params = {
-  params: { run: string }
-}
-
 export async function GET(
   request: NextRequest,
-  { params }: Params
+  { params }: { params: { run: string } }
 ): Promise<NextResponse> {
   try {
     const { run } = params;

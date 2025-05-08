@@ -7,17 +7,11 @@ const BUCKET = process.env.OUTPUT_BUCKET!   // must be set in .env.local
 
 const s3 = new S3Client({ region: REGION })
 
-type PreviewParams = {
-  params: {
-    run: string;
-  };
-};
-
 export async function GET(
   request: Request,
-  { params }: PreviewParams
+  context: { params: { run: string } }
 ) {
-  const { run } = params
+  const { run } = context.params
   const prefix = `runs/${run}/previews/`
 
   // fetch manifest.json

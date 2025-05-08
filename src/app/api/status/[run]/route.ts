@@ -6,17 +6,11 @@ const REGION = process.env.AWS_REGION!;
 const BUCKET = process.env.OUTPUT_BUCKET!;
 const client = new S3Client({ region: REGION });
 
-type StatusParams = {
-  params: {
-    run: string;
-  };
-};
-
 export async function GET(
   request: Request,
-  { params }: StatusParams
+  context: { params: { run: string } }
 ) {
-  const { run } = params;
+  const { run } = context.params;
   const key = `runs/${run}/frontend_status.json`;
 
   // Generate a 60s presigned URL

@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   const body = await req.json();              // { run_id: 'uuid' }
   const url  = process.env.NEXT_PUBLIC_GENERATE_URL!;
 

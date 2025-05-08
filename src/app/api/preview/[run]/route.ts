@@ -1,45 +1,58 @@
-import { NextResponse } from 'next/server';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { NextResponse } from 'next/server'
+import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
-const REGION = process.env.AWS_REGION!;
-const BUCKET = process.env.OUTPUT_BUCKET!;
-const s3 = new S3Client({ region: REGION });
+const REGION = process.env.AWS_REGION!
+const BUCKET = process.env.OUTPUT_BUCKET!   // must be set in .env.local
+
+const s3 = new S3Client({ region: REGION })
+
+type PreviewParams = {
+  params: {
+    run: string;
+  };
+};
 
 export async function GET(
-  _req: Request,
-  context: { params: Promise<{ run: string }> }
+  request: Request,
+  { params }: PreviewParams
 ) {
-  const { run } = await context.params;
-  const prefix = `runs/${run}/previews/`;
+  const { run } = params
+  const prefix = `runs/${run}/previews/`
 
-  try {
-    const manifestUrl = await getSignedUrl(
-      s3,
-      new GetObjectCommand({
-        Bucket: BUCKET,
-        Key: `${prefix}manifest.json`,
-      }),
-      { expiresIn: 60 }
-    );
-
-    const manifestRes = await fetch(manifestUrl);
-    const manifest = await manifestRes.json();
-    const files = Array.isArray(manifest) ? manifest : manifest.files ?? [];
-
-    const signedUrls = await Promise.all(
-      files.map((file: string) =>
-        getSignedUrl(
-          s3,
-          new GetObjectCommand({ Bucket: BUCKET, Key: `${prefix}${file}` }),
-          { expiresIn: 60 }
-        )
-      )
-    );
-
-    return NextResponse.json({ slides: signedUrls });
-  } catch (err) {
-    console.error('❌ Preview fetch failed:', err);
-    return NextResponse.json({ error: 'Preview fetch failed' }, { status: 500 });
+  // fetch manifest.json
+  const manifestCmd = new GetObjectCommand({
+    Bucket: BUCKET,
+    Key:    `${prefix}manifest.json`,
+  })
+  const manifestUrl = await getSignedUrl(s3, manifestCmd, { expiresIn: 600 })
+  const res = await fetch(manifestUrl)
+  if (!res.ok) {
+    return NextResponse.json({ error: 'Manifest not found' }, { status: 404 })
   }
+  const { slides, pptx } = (await res.json()) as {
+    slides: string[]
+    pptx:   string
+  }
+
+  // presign slide images
+  const slideUrls = await Promise.all(
+    slides.map((fn) =>
+      getSignedUrl(
+        s3,
+        new GetObjectCommand({ Bucket: BUCKET, Key: `${prefix}${fn}` }),
+        { expiresIn: 600 }
+      )
+    )
+  )
+
+  // presign the PPTX file
+  const pptKey = `runs/${run}/pptx/${pptx}`
+  const pptUrl = await getSignedUrl(
+    s3,
+    new GetObjectCommand({ Bucket: BUCKET, Key: pptKey }),
+    { expiresIn: 600 }
+  )
+
+  return NextResponse.json({ slideUrls, pptUrl })
 }

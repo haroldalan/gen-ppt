@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   const { run_id } = await req.json();
   const url = process.env.NEXT_PUBLIC_PRESIGN_URL;
 

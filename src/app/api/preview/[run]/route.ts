@@ -1,20 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3'
-import { getSignedUrl }             from '@aws-sdk/s3-request-presigner'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 const REGION = process.env.AWS_REGION!
 const BUCKET = process.env.OUTPUT_BUCKET!
 
 const s3 = new S3Client({ region: REGION })
 
-type Params = { run: string }
+type Params = {
+  params: { run: string }
+}
 
 export async function GET(
   request: NextRequest,
-  context: { params: Params }
+  { params }: Params
 ): Promise<NextResponse> {
   try {
-    const { run } = await Promise.resolve(context.params);
+    const { run } = params;
     const prefix = `runs/${run}/previews/`
 
     // fetch manifest.json

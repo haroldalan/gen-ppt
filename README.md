@@ -1,6 +1,6 @@
-# GemPPT - AI-Powered Presentation Generator
+# GenPPT - AI-Powered Presentation Generator
 
-GemPPT is a web application that generates full presentation decks from text descriptions. Simply describe your presentation idea, choose a template, and get a complete slide deck in minutes.
+GenPPT is a web application that generates full presentation decks from text descriptions. Simply describe your presentation idea, choose a template, and get a complete slide deck in minutes.
 
 ## Features
 
